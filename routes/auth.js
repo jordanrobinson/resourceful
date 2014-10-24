@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var request = require('request');
 
 /* GET auth page. */
 router.get('/', function(req, res) {
@@ -18,22 +19,26 @@ router.post('/', function(req, res) {
 module.exports = router;
 
 var getData = function(user, pass, res) {
-    basicRequest(user, pass, res);
+    setTimeout(basicRequest(user, pass, res), 1000 * 60 * 60);
 };
+
+var update = function(user, pass, res) {
+    basicRequest(user, pass, res);
+    setTimeout(update(user, pass, res), 1000 * 60 * 60);
+}
 
 var basicRequest = function(user, pass, res) {
     var self = this;
     self.res = res;
-    var request = require('request');
+
 
     var options = {
         url: 'https://api.resourceguruapp.com/v1/buildingblocks/resources/me',
         auth: {
-            username: user,
-            password: pass
+            username: 'j.robinson@building-blocks.com', //user,
+            password: ''                     //pass
         }
     };
-
 
     //get the resource id of the person /resources/me
     //use that id to get the bookings /resources/id/bookings
@@ -41,19 +46,52 @@ var basicRequest = function(user, pass, res) {
 
     return request(options, function(err, res, body) {
 
+        var startDate = '2014-10-01';
+        var endDate = '2014-10-21';
+
         var options = {
-            url: 'https://api.resourceguruapp.com/v1/buildingblocks/resources/' + JSON.parse(body).id + '/bookings',
+            url: 'https://api.resourceguruapp.com/v1/buildingblocks/resources/' + JSON.parse(body).id + '/bookings?' +
+                'start_date=' + startDate + 'end_date=' + endDate,
             auth: {
-                username: user,
-                password: pass
+                username: 'j.robinson@building-blocks.com', //user,
+                password: '.'                     //pass
             }
         };
         request(options, function(err, res, body) {
-            console.log(options.url);
-            self.res.send(JSON.stringify(JSON.parse(body), 0, 4));
+            getClients(err, self.res, body, options);
         });
     });
 };
+
+var getClients = function(err, res, body, options) {
+    var bookings = JSON.parse(body);
+    var self = this;
+    self.res = res;
+    options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/clients',
+        request(options, function(err, res, body) {
+            body = JSON.parse(body);
+
+            for (var i = 0; i < bookings.length; i++) {
+                console.log(bookings[i].client_id);
+                for (var j = 0; j < body.length; j++) {
+                    console.log(body[j].id);
+                    if (bookings[i].client_id === body[j].id) {
+                        bookings[i].client_id = body[j].name;
+                        bookings[i].colour = body[j].color;
+                        break;
+                    }
+                }
+            }
+            parseData(bookings, body, self.res);
+        });
+}
+
+var parseData = function(bookings, clients, res) {
+
+    //bookings = JSON.parse(bookings);
+
+    res.render('schedule', { bookings: bookings });
+}
 
 
 var oauthRequest = function(user, pass) {

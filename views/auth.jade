@@ -5,9 +5,9 @@ block content
     p Welcome to #{title}
     div
         form(action='auth', method='post')
-            div form-group
+            div(class='form-group') Username
                 input(type='text', name='user', class='login-text')
-            div form-group
+            div(class='form-group') Password
                 input(type='password', name='pass', class='login-text')
             button(type='submit', class='login-button').
                 Login

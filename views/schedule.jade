@@ -1,0 +1,36 @@
+extends layout
+
+block content
+    #bookings
+        for booking in bookings
+            div(class='booking')
+                table(class='table')
+                    thead
+                        th(style='border-bottom: 2px solid #{booking.colour}')='Client'
+                        th(class='booking-content', style='border-bottom: 2px solid #{booking.colour}')=booking.client_id
+                    tr
+                        td='Project'
+                        td(class='booking-content')=booking.project_id
+                    tr
+                        td='Resource'
+                        td(class='booking-content')=booking.resource_id
+                    tr
+                        td='Notes'
+                        td(class='booking-content')=booking.notes
+                    tr
+                        td='Details'
+                        td(class='booking-content')=booking.details
+                    tr
+                        td='Starts'
+                        td(class='booking-content')=booking.start_date
+                    tr
+                        td='Ends'
+                        td(class='booking-content')=booking.end_date
+
+
+        //#bookings
+            //for booking in bookings
+                //.booking
+                //h2= booking.id
+                //p= booking.client_id + ", " + booking.project_id + ", " + booking.project_id + ", " + booking.resource_id + ", " + booking.notes + ", " + booking.details + ", " + booking.start_date + ", " +  booking.end_date + ", " +  booking.refreshable + ", " + booking.created_at + ", " + booking.updated_at + ", " + booking.booker
+

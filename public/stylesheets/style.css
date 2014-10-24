@@ -6,3 +6,24 @@ body {
 a {
   color: #00B7FF;
 }
+
+.booking {
+    border: 1px solid;
+}
+
+.field {
+    display: block;
+}
+
+.field-title {
+
+}
+
+.field-content {
+    text-align: right;
+    float: right;
+}
+
+.booking-content {
+    text-align: right;
+}
