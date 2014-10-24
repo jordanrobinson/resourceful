@@ -11,3 +11,11 @@ block content
                 input(type='password', name='pass', class='login-text')
             button(type='submit', class='login-button').
                 Login
+    div
+        form(action='email', method='post')
+            div(class='form-group') Username
+                input(type='text', name='user', class='login-text')
+            div(class='form-group') Password
+                input(type='password', name='pass', class='login-text')
+            button(type='submit').
+                Send email

@@ -1,9 +1,18 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var moment = require('moment');
+var fs = require('fs');
+var setupFinished = false;
+var settings;
 
 /* GET auth page. */
 router.get('/', function(req, res) {
+
+    if (!setupFinished) {
+        setup(); //export to a config class
+    }
+
     if (req.params.name !== undefined && req.params.pass !== undefined) {
         res.render('index', {title: 'success'});
     }
@@ -13,19 +22,36 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    getData(req.body.user, req.body.pass, res);
+    getData(settings.rgUsername, settings.rgPassword, res);
 });
 
 module.exports = router;
 
-var getData = function(user, pass, res) {
-    setTimeout(basicRequest(user, pass, res), 1000 * 60 * 60);
+
+var setup = function() {
+    var data = fs.readFileSync('./config.json');
+
+    try{
+        settings = JSON.parse(data);
+        setupFinished = true;
+    }
+    catch (err) {
+        console.log(err);
+    }
 };
 
+var getData = function(user, pass, res) {
+    console.log('hitting getData');
+    setTimeout(basicRequest(user, pass, res), 1000 * 60); //TODO: change to an hour
+};
+
+
+
 var update = function(user, pass, res) {
+    console.log('hitting update');
     basicRequest(user, pass, res);
-    setTimeout(update(user, pass, res), 1000 * 60 * 60);
-}
+    setTimeout(update(user, pass, res), 1000 * 60); //TODO: change to an hour
+};
 
 var basicRequest = function(user, pass, res) {
     var self = this;
@@ -35,26 +61,22 @@ var basicRequest = function(user, pass, res) {
     var options = {
         url: 'https://api.resourceguruapp.com/v1/buildingblocks/resources/me',
         auth: {
-            username: 'j.robinson@building-blocks.com', //user,
-            password: ''                     //pass
+            username: user,
+            password: pass
         }
     };
 
-    //get the resource id of the person /resources/me
-    //use that id to get the bookings /resources/id/bookings
-    //return the json here and then parse it later
-
     return request(options, function(err, res, body) {
-
-        var startDate = '2014-10-01';
-        var endDate = '2014-10-21';
+        var currentDate = new Date();
+        var startDate = moment(currentDate).format('YYYY-MM-DD');
+        var endDate = moment(currentDate).add(1, 'month').format('YYYY-MM-DD');
 
         var options = {
             url: 'https://api.resourceguruapp.com/v1/buildingblocks/resources/' + JSON.parse(body).id + '/bookings?' +
-                'start_date=' + startDate + 'end_date=' + endDate,
+            'start_date=' + startDate + 'end_date=' + endDate,
             auth: {
-                username: 'j.robinson@building-blocks.com', //user,
-                password: '.'                     //pass
+                username: user,
+                password: pass
             }
         };
         request(options, function(err, res, body) {
@@ -68,22 +90,20 @@ var getClients = function(err, res, body, options) {
     var self = this;
     self.res = res;
     options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/clients',
-        request(options, function(err, res, body) {
-            body = JSON.parse(body);
+    request(options, function(err, res, body) {
+        body = JSON.parse(body);
 
-            for (var i = 0; i < bookings.length; i++) {
-                console.log(bookings[i].client_id);
-                for (var j = 0; j < body.length; j++) {
-                    console.log(body[j].id);
-                    if (bookings[i].client_id === body[j].id) {
-                        bookings[i].client_id = body[j].name;
-                        bookings[i].colour = body[j].color;
-                        break;
-                    }
+        for (var i = 0; i < bookings.length; i++) {
+            for (var j = 0; j < body.length; j++) {
+                if (bookings[i].client_id === body[j].id) {
+                    bookings[i].client_id = body[j].name;
+                    bookings[i].colour = body[j].color;
+                    break;
                 }
             }
-            parseData(bookings, body, self.res);
-        });
+        }
+        parseData(bookings, body, self.res);
+    });
 }
 
 var parseData = function(bookings, clients, res) {
@@ -105,22 +125,22 @@ var oauthRequest = function(user, pass) {
 
     console.log(oauth2);
 // Get the access token object.
-    var token;
-    oauth2.password.getToken({
-        username: user,
-        password: pass
-    }, saveToken);
+var token;
+oauth2.password.getToken({
+    username: user,
+    password: pass
+}, saveToken);
 
 // Save the access token
-    function saveToken(error, result) {
-        if (error) { console.log('Access Token Error', error.message); }
-        token = oauth2.accessToken.create(result);
+function saveToken(error, result) {
+    if (error) { console.log('Access Token Error', error.message); }
+    token = oauth2.accessToken.create(result);
 
-        oauth2.api('GET', '/users', {
-            access_token: token.token.access_token
-        }, function (err, data) {
-            console.log(data);
-        });
-    }
+    oauth2.api('GET', '/users', {
+        access_token: token.token.access_token
+    }, function (err, data) {
+        console.log(data);
+    });
+}
 }
 
