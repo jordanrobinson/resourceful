@@ -1,21 +1,15 @@
 extends layout
 
 block content
-    h1= title
-    p Welcome to #{title}
     div
         form(action='auth', method='post')
-            div(class='form-group') Username
-                input(type='text', name='user', class='login-text')
-            div(class='form-group') Password
-                input(type='password', name='pass', class='login-text')
             button(type='submit', class='login-button').
-                Login
+                Poll Resource Guru
     div
         form(action='email', method='post')
-            div(class='form-group') Username
-                input(type='text', name='user', class='login-text')
-            div(class='form-group') Password
-                input(type='password', name='pass', class='login-text')
             button(type='submit').
-                Send email
+                Send Email
+    div
+        form(action='auth?method=update', method='post')
+            button(type='submit').
+                Update Cache

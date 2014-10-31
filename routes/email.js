@@ -32,12 +32,12 @@ var setup = function() {
 			settings = JSON.parse(data);
 			setupFinished = true;
 		}
-		catch (err) {
+		catch (err) { 
 			console.log(err);
 		}
 	}
 
-	var constructBody = function() {
+var constructBody = function() {
 	//do stuff here
 
 	return '<i>test email :D</i>'

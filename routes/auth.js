@@ -6,7 +6,8 @@ jsdiff = require('diff');
 
 var caching = require('../controllers/caching.js'),
 config = require('../controllers/config.js'),
-comparison = require('../controllers/comparison.js');
+comparison = require('../controllers/comparison.js'),
+updates = require('../controllers/updates.js');
 
 var router = express.Router();
 
@@ -31,8 +32,16 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    getData(config.settings.rgUsername, config.settings.rgPassword, res);
-    setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, res);
+    if (req.query.method === 'update') {
+        console.log('starting updates...');
+        updates.updateClients();
+        updates.updateProjects();
+        res.send('updates worked :D');
+    }
+    else {
+        getData(config.settings.rgUsername, config.settings.rgPassword, res);
+        setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, res);    
+    }
 });
 
 module.exports = router;

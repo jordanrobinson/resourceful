@@ -2,7 +2,9 @@ var exports = module.exports = {};
 
 var fs = require('fs');
 
-exports.settings;
+exports.clients = null;
+exports.projects = null;
+
 
 exports.update = function(user, pass, res) {
     console.log('hitting update');
