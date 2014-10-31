@@ -7,13 +7,10 @@ block content
                 table(class='table')
                     thead
                         th(style='border-bottom: 2px solid #{booking.colour}')='Client'
-                        th(class='booking-content', style='border-bottom: 2px solid #{booking.colour}')=booking.client_id
+                        th(class='booking-content', style='border-bottom: 2px solid #{booking.client_colour}')=booking.client_id
                     tr
                         td='Project'
-                        td(class='booking-content')=booking.project_id
-                    tr
-                        td='Resource'
-                        td(class='booking-content')=booking.resource_id
+                        td(class='booking-content', style='border-bottom: 2px solid #{booking.project_colour}')=booking.project_id
                     tr
                         td='Notes'
                         td(class='booking-content')=booking.notes
@@ -26,7 +23,6 @@ block content
                     tr
                         td='Ends'
                         td(class='booking-content')=booking.end_date
-
 
         //#bookings
             //for booking in bookings

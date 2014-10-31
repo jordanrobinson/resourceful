@@ -7,7 +7,8 @@ jsdiff = require('diff');
 var caching = require('../controllers/caching.js'),
 config = require('../controllers/config.js'),
 comparison = require('../controllers/comparison.js'),
-updates = require('../controllers/updates.js');
+updates = require('../controllers/updates.js'),
+resources = require('../controllers/resources.js');
 
 var router = express.Router();
 
@@ -20,7 +21,7 @@ var previousBookings;
 router.get('/', function(req, res) {
 
     if (!config.settings) {
-        config.setup(); //export to a config class
+        config.setup();
     }
 
     if (req.params.name !== undefined && req.params.pass !== undefined) {
@@ -32,16 +33,21 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    if (req.query.method === 'update') {
         console.log('starting updates...');
-        updates.updateClients();
-        updates.updateProjects();
-        res.send('updates worked :D');
-    }
-    else {
+        if (fs.existsSync('data/clients.json')) {
+            resources.clients = JSON.parse(fs.readFileSync('data/clients.json'));
+        } else {
+            updates.updateClients(); //offload this to cache
+        }
+
+        if (fs.existsSync('data/projects.json')) {
+            resources.projects = JSON.parse(fs.readFileSync('data/projects.json'));
+        } else {
+           updates.updateProjects();
+        }
+
         getData(config.settings.rgUsername, config.settings.rgPassword, res);
         setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, res);    
-    }
 });
 
 module.exports = router;
@@ -77,36 +83,37 @@ var basicRequest = function(user, pass, res) {
             }
         };
         request(options, function(err, res, body) {
-            getClients(err, self.res, body, options);
+            parseData(JSON.parse(body), self.res);
         });
     });
 };
 
-var getClients = function(err, res, body, options) {
-    var bookings = JSON.parse(body);
+var parseData = function(bookings, res) {
 
-    var self = this;
-    self.res = res;
-    options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/clients',
-    request(options, function(err, res, body) {
-        body = JSON.parse(body);
+    if (!firstRenderFinished) {
 
+        //parse clients
         for (var i = 0; i < bookings.length; i++) {
-            for (var j = 0; j < body.length; j++) {
-                if (bookings[i].client_id === body[j].id) {
-                    bookings[i].client_id = body[j].name;
-                    bookings[i].colour = body[j].color;
+            for (var j = 0; j < resources.clients.length; j++) {
+                if (bookings[i].client_id === resources.clients[j].id) {
+                    bookings[i].client_id = resources.clients[j].name;
+                    bookings[i].client_colour = resources.clients[j].color;
                     break;
                 }
             }
         }
-        parseData(bookings, body, self.res);
-    });
-}
 
-var parseData = function(bookings, clients, res) {
+        //parse projects
+        for (var i = 0; i < bookings.length; i++) {
+            for (var j = 0; j < resources.projects.length; j++) {
+                if (bookings[i].project_id === resources.projects[j].id) {
+                    bookings[i].project_id = resources.projects[j].name;
+                    bookings[i].project_colour = resources.projects[j].color;
+                    break;
+                }
+            }
+        }
 
-    if (!firstRenderFinished) {
         res.render('schedule', { bookings: bookings });
 
         caching.cacheDataToFile(bookings, 'bookings.json');

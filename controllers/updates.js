@@ -3,7 +3,8 @@ var exports = module.exports = {};
 var request = require('request');
 
 var caching = require('../controllers/caching.js'),
-config = require('../controllers/config.js');
+config = require('../controllers/config.js'),
+resources = require('../controllers/resources.js');
 
 var oneHour = (((1000 * 60) * 60) * 60),
 options = config.rgOptions;
@@ -23,19 +24,21 @@ exports.queueUpdates = function() {
 
 exports.updateClients = function() {
 	checkSetup();
-	options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/clients',
+	options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/clients?limit=0',
 	request(options, function(err, res, body) {
 		body = JSON.parse(body);
 		caching.cacheDataToFile(body, 'clients.json');
+		resources.clients = body;
 	});
 }
 
 exports.updateProjects = function() {
 	checkSetup();
-	options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/projects',
+	options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/projects?limit=0',
 	request(options, function(err, res, body) {
 		body = JSON.parse(body);
 		caching.cacheDataToFile(body, 'projects.json');
+		resources.projects = body;
 	});
 }
 

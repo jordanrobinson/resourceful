@@ -5,7 +5,6 @@ var fs = require('fs');
 exports.clients = null;
 exports.projects = null;
 
-
 exports.update = function(user, pass, res) {
     console.log('hitting update');
     basicRequest(user, pass, res);
