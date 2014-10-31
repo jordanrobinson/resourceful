@@ -1,16 +1,25 @@
-var express = require('express');
+var express = require('express'),
+request = require('request'),
+moment = require('moment'),
+fs = require('fs'),
+jsdiff = require('diff');
+
+var caching = require('../controllers/caching.js'),
+config = require('../controllers/config.js'),
+comparison = require('../controllers/comparison.js');
+
 var router = express.Router();
-var request = require('request');
-var moment = require('moment');
-var fs = require('fs');
-var setupFinished = false;
-var settings;
+
+var firstRenderFinished = false;
+var getDataInterval = (15000);// * 60);// * 60;
+var previousBookings;
+
 
 /* GET auth page. */
 router.get('/', function(req, res) {
 
-    if (!setupFinished) {
-        setup(); //export to a config class
+    if (!config.settings) {
+        config.setup(); //export to a config class
     }
 
     if (req.params.name !== undefined && req.params.pass !== undefined) {
@@ -22,41 +31,20 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    getData(settings.rgUsername, settings.rgPassword, res);
+    getData(config.settings.rgUsername, config.settings.rgPassword, res);
+    setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, res);
 });
 
 module.exports = router;
 
-
-var setup = function() {
-    var data = fs.readFileSync('./config.json');
-
-    try{
-        settings = JSON.parse(data);
-        setupFinished = true;
-    }
-    catch (err) {
-        console.log(err);
-    }
-};
-
 var getData = function(user, pass, res) {
-    console.log('hitting getData');
-    setTimeout(basicRequest(user, pass, res), 1000 * 60); //TODO: change to an hour
-};
-
-
-
-var update = function(user, pass, res) {
-    console.log('hitting update');
+    console.log('hitting getData ' + new Date().toString());
     basicRequest(user, pass, res);
-    setTimeout(update(user, pass, res), 1000 * 60); //TODO: change to an hour
 };
 
 var basicRequest = function(user, pass, res) {
     var self = this;
     self.res = res;
-
 
     var options = {
         url: 'https://api.resourceguruapp.com/v1/buildingblocks/resources/me',
@@ -87,6 +75,7 @@ var basicRequest = function(user, pass, res) {
 
 var getClients = function(err, res, body, options) {
     var bookings = JSON.parse(body);
+
     var self = this;
     self.res = res;
     options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/clients',
@@ -108,39 +97,20 @@ var getClients = function(err, res, body, options) {
 
 var parseData = function(bookings, clients, res) {
 
-    //bookings = JSON.parse(bookings);
+    if (!firstRenderFinished) {
+        res.render('schedule', { bookings: bookings });
 
-    res.render('schedule', { bookings: bookings });
+        caching.cacheDataToFile(bookings, 'bookings.json');
+        firstRenderFinished = true;
+    }
+    else {
+        caching.cacheDataToFile(bookings, 'current.json');
+
+        currentBookings = fs.readFileSync('data/current.json', {encoding: 'utf8'});
+        previousBookings = fs.readFileSync('data/bookings.json', {encoding: 'utf8'});
+        
+        comparison.compareAgainstPrevious(currentBookings, previousBookings);
+    }
 }
 
-
-var oauthRequest = function(user, pass) {
-
-    var oauth2 = require('simple-oauth2')({
-        clientID: 'd9ee7e5d9ad648f92276962dc309b04479807de02b2ce2ed3195d4655578ef10',
-        clientSecret: 'd32588d5c8742bf050fbd12a9a0f9bb041cf92e2f5f0df649a7a8c2f743a6558',
-        site: 'https://api.resourceguruapp.com/oauth/token',
-        tokenPath: 'https://api.resourceguruapp.com/oauth/token'
-    });
-
-    console.log(oauth2);
-// Get the access token object.
-var token;
-oauth2.password.getToken({
-    username: user,
-    password: pass
-}, saveToken);
-
-// Save the access token
-function saveToken(error, result) {
-    if (error) { console.log('Access Token Error', error.message); }
-    token = oauth2.accessToken.create(result);
-
-    oauth2.api('GET', '/users', {
-        access_token: token.token.access_token
-    }, function (err, data) {
-        console.log(data);
-    });
-}
-}
 
