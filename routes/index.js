@@ -24,12 +24,7 @@ router.get('/', function(req, res) {
         config.setup();
     }
 
-    if (req.params.name !== undefined && req.params.pass !== undefined) {
-        res.render('index', {title: 'success'});
-    }
-    else {
-        res.render('index', { title: 'Auth' });
-    }
+    res.render('index', { title: 'Resourceful' });
 });
 
 router.post('/', function(req, res) {
