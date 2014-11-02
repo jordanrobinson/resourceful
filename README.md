@@ -9,6 +9,15 @@ Server application that emails out notifications when your Resource Guru schedul
 `npm install`
 `nodemon`
 
+Create a config file with your details called `config.json` located in the root directory. The contents should look a bit like this:
+
+`{
+	"rgUsername":"j.robinson@building-blocks.com",
+	"rgPassword":"hunter2",
+	"mailUsername":"me@jordanrobinson.co.uk",
+	"mailPassword":"hunter2"
+}`
+
 Then go to `http://localhost:33333`
 
 ## Contributing
