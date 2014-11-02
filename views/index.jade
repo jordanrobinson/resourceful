@@ -4,3 +4,15 @@ block content
     h1= title
     p Welcome to #{title}
 
+    div
+        form(action='/', method='post')
+            button(type='submit', class='login-button').
+                Poll Resource Guru
+    div
+        form(action='email', method='post')
+            button(type='submit').
+                Send Email
+    div
+        form(action='/?method=update', method='post')
+            button(type='submit').
+                Update Cache

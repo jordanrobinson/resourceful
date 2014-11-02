@@ -72,27 +72,3 @@ var basicRequest = function(user, pass, res) {
 		});
 	});
 };
-
-
-
-exports.getClients = function(err, res, body, options) {
-	var bookings = JSON.parse(body);
-
-	var self = this;
-	self.res = res;
-	options.url = 'https://api.resourceguruapp.com/v1/buildingblocks/clients',
-	request(options, function(err, res, body) {
-		body = JSON.parse(body);
-
-		for (var i = 0; i < bookings.length; i++) {
-			for (var j = 0; j < body.length; j++) {
-				if (bookings[i].client_id === body[j].id) {
-					bookings[i].client_id = body[j].name;
-					bookings[i].colour = body[j].color;
-					break;
-				}
-			}
-		}
-		parseData(bookings, body, self.res);
-	});
-}
