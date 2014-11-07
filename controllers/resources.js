@@ -12,7 +12,7 @@ exports.update = function(user, pass, res) {
 };
 
 exports.getClients = function(err, res, body, options) {
-    var bookings = JSON.parse(body);
+    var bookings = JSON.parse(body); 
 
     var self = this;
     self.res = res;

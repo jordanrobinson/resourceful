@@ -7,7 +7,8 @@ config = require('../controllers/config.js'),
 resources = require('../controllers/resources.js');
 
 var oneHour = (((1000 * 60) * 60) * 60),
-options = config.rgOptions;
+options = config.rgOptions
+exports.update = true;
 
 var checkSetup = function() {
 	if (!options) {
@@ -19,7 +20,7 @@ var checkSetup = function() {
 exports.queueUpdates = function() {
 	checkSetup();
 	setInterval(updateClients, oneHour);
-	setInterval(updateClients, oneHour);
+	setInterval(updateProjects, oneHour);
 }
 
 exports.updateClients = function() {

@@ -2,6 +2,14 @@ extends layout
 
 block content
     h1= 'Your schedule looks a bit like this'
+    div
+        form(action='polling?method=start', method='post')
+            button(type='submit', class='login-button').
+                Stop polling
+    div
+        form(action='polling?method=stop', method='post')
+            button(type='submit', class='login-button').
+                Start Polling
 
     #bookings
         for booking in bookings
@@ -25,10 +33,3 @@ block content
                     tr
                         td='Ends'
                         td(class='booking-content')=booking.end_date
-
-        //#bookings
-            //for booking in bookings
-                //.booking
-                //h2= booking.id
-                //p= booking.client_id + ", " + booking.project_id + ", " + booking.project_id + ", " + booking.resource_id + ", " + booking.notes + ", " + booking.details + ", " + booking.start_date + ", " +  booking.end_date + ", " +  booking.refreshable + ", " + booking.created_at + ", " + booking.updated_at + ", " + booking.booker
-
