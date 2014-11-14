@@ -24,7 +24,7 @@ router.get('/', function(req, res) {
         config.setup();
     }
 
-    res.render('index', { title: 'Resourceful' });
+    res.render('index');
 });
 
 router.post('/', function(req, res) {
