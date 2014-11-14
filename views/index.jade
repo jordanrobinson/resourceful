@@ -29,10 +29,6 @@ html.no-js(lang='en', dir='ltr')
        No 'media queries' CSS 
     //if lt IE 9
       link(rel='stylesheet', media='screen', href='./styles/ie.css')
-    //
-       Feature Detection 
-    script(src='./scripts/modernizr.js')
-    script(src='./scripts/modernizr.tests.js')
   body
     header#header.header(role='banner', itemscope='itemscope', itemtype='http://schema.org/WPHeader')
       .header-inner
@@ -68,7 +64,7 @@ html.no-js(lang='en', dir='ltr')
                       div
                         button.btn.btn-style-a.btn-icon-right(type='submit') Login 
                           i.icon.ss-key
-                  section.block.block-size-a
+                  section.block.block-size-a.visually-hidden
                     h2 Unsubscribe
                     form(action='/', method='post')
                       p It seems we're already sending you alerts, would you like us to stop?
@@ -85,9 +81,3 @@ html.no-js(lang='en', dir='ltr')
                     h2 Details
                     p Resourceful is on #[a(href='#') Github]! There's plenty of stuff to do and much more I haven't thought of, so get contributing!
         footer#footer(role='contentinfo')
-    //
-       Jquery 
-    script(src='./scripts/jquery.js')
-    //
-       Combined Scripts 
-    script(src='./scripts/scripts.js')
