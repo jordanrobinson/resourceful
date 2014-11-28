@@ -10,6 +10,16 @@ exports.alert = function(emailAddress) {
 	mail(constructBody(), emailAddress);
 }
 
+exports.unsubscribe = function(emailAddress) {
+	setup();
+	mail(constructUnsubscribeBody(), emailAddress);
+}
+
+exports.subscribe = function(emailAddress) {
+	setup();
+	mail(constructSubscribeBody(), emailAddress);
+}
+
 var setup = function() {
 	var data = fs.readFileSync('./config.json');
 	try{
@@ -33,14 +43,21 @@ var setup = function() {
 
 var constructBody = function() {
 	//do stuff here
+	return fs.readFileSync('templates/alert.html', {encoding: 'utf8'});
+}
 
-	return ;
+var constructUnsubscribeBody = function() {
+	return fs.readFileSync('templates/unsubscribed.html', {encoding: 'utf8'});
+}
+
+var constructSubscribeBody = function() {
+	return fs.readFileSync('templates/subscribed.html', {encoding: 'utf8'});
 }
 
 var mail = function(body, destination) {
 
 	var mailOptions = {
-		from: 'test person',
+		from: 'Resourceful',
 		to: destination,
 		subject: 'Resource Guru Notification',
 		text: body,

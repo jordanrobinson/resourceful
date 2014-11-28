@@ -8,16 +8,16 @@ var caching = require('../controllers/caching.js'),
 config = require('../controllers/config.js'),
 comparison = require('../controllers/comparison.js'),
 updates = require('../controllers/updates.js'),
-resources = require('../controllers/resources.js');
+resources = require('../controllers/resources.js'),
+email = require('../controllers/email.js');
 
 var router = express.Router();
 
 var firstRenderFinished = false;
-var getDataInterval = 1000 * 6;//0;// * 60;
+var getDataInterval = 1000 * 60;// * 60;
 var previousBookings;
 
 var runningTasks = {};
-
 
 /* GET index page. */
 router.get('/', function(req, res) {
@@ -30,6 +30,12 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
+
+    var rgUsername = req.body.rgUsername;
+    var rgPassword = config.settings.rgPassword;
+    var mailUsername = config.settings.mailUsername;
+
+    console.log(rgUsername);
     
     if (fs.existsSync('data/clients.json')) {
         resources.clients = JSON.parse(fs.readFileSync('data/clients.json'));
@@ -43,16 +49,22 @@ router.post('/', function(req, res) {
        updates.updateProjects();
     }
 
-    console.log('starting updates for ' + config.settings.rgUsername);
-    getData(config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
+    console.log('starting updates for ' + rgUsername);
+    getData(rgUsername, rgPassword, mailUsername, res);
 
-    runningTasks[config.settings.rgUsername] = setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
+    runningTasks[rgUsername] = setInterval(getData, getDataInterval, rgUsername, rgPassword, mailUsername, res);
+    email.subscribe(mailUsername);
     res.render('success');
 });
 
 router.post('/unsubscribe', function(req, res) {
-    clearInterval(runningTasks[config.settings.rgUsername]);
-    console.log('unsubscribing ' + config.settings.rgUsername);
+    var rgUsername = config.settings.rgUsername;
+    var rgPassword = config.settings.rgPassword;
+    var mailUsername = config.settings.mailUsername;
+
+    clearInterval(runningTasks[rgUsername]);
+    console.log('unsubscribing ' + rgUsername);
+    email.unsubscribe(mailUsername);
     res.render('unsubscribed');
 });
 

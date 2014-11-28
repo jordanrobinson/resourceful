@@ -56,11 +56,11 @@ html.no-js(lang='en', dir='ltr')
                     form(action='/', method='post', name='subscribe', onsubmit='return subValidate();')
                       p All we need is your Resource Guru details, and an email address to send the alerts to.
                       div
-                        input.input-xlarge(type='text', id='rgUsername', placeholder='Resource Guru Username')
+                        input.input-xlarge(type='text', name='rgUsername', id='rgUsername', placeholder='Resource Guru Username')
                       div
-                        input.input-xlarge(type='password', id='rgPassword', placeholder='Resource Guru Password')
+                        input.input-xlarge(type='password', name='rgPassword', id='rgPassword', placeholder='Resource Guru Password')
                       div
-                        input.input-xlarge(type='text', id='email', placeholder='Email Address')
+                        input.input-xlarge(type='text', name='mailAddress', id='email', placeholder='Email Address')
                       div
                         button.btn.btn-style-a.btn-icon-right(type='submit') Login 
                           i.icon.ss-key
@@ -69,11 +69,11 @@ html.no-js(lang='en', dir='ltr')
                     form(action='/unsubscribe', method='post', name='unsubscribe', onsubmit='return unsubValidate();')
                       p It seems we're already sending you alerts, would you like us to stop?
                       div
-                        input.input-xlarge(type='text', id='unsubRgUsername', name='username', placeholder='Resource Guru Username')
+                        input.input-xlarge(type='text', name='rgUsername', id='unsubRgUsername', placeholder='Resource Guru Username')
                       div
-                        input.input-xlarge(type='password', id= 'unsubRgPassword', name='password', placeholder='Resource Guru Password')
+                        input.input-xlarge(type='password', name='rgPassword', id= 'unsubRgPassword', placeholder='Resource Guru Password')
                       div
-                        input.input-xlarge(type='text', id= 'unsubEmail', name='email', placeholder='Email Address')
+                        input.input-xlarge(type='text', name='mailAddress', id='unsubEmail', placeholder='Email Address')
                       div
                         button.btn.btn-style-c.btn-icon-right(type='submit') Unsubscribe 
                           i.icon.ss-delete
