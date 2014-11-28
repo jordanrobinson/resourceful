@@ -92,6 +92,10 @@ var basicRequest = function(user, pass, email, res) {
 
 var parseData = function(bookings, email, res) {
 
+    var userdir = email.replace(/\./g, '');
+    userdir = userdir.replace('@', '-');
+    userdir = 'data/' + userdir;
+
     if (!firstRenderFinished) {
 
         //parse clients
@@ -116,19 +120,16 @@ var parseData = function(bookings, email, res) {
             }
         }
 
-        console.log(email);
-        var userdir = email.replace('.', '');
-        userdir = userdir.replace('@', '');
-        console.log(userdir);
-
-        caching.cacheDataToFile(bookings, + 'bookings.json');
+        caching.cacheDataToFile(bookings, userdir, 'bookings.json');
         firstRenderFinished = true;
     }
     else {
-        caching.cacheDataToFile(bookings, 'current.json');
+        caching.cacheDataToFile(bookings, userdir, 'current.json');
 
-        currentBookings = fs.readFileSync('data/current.json', {encoding: 'utf8'});
-        previousBookings = fs.readFileSync('data/bookings.json', {encoding: 'utf8'});
+        currentBookings = fs.readFileSync(userdir + '/current.json', {encoding: 'utf8'});
+        previousBookings = fs.readFileSync(userdir + '/bookings.json', {encoding: 'utf8'});
+
+        console.log(userdir + '/current.json');
         
         comparison.compareAgainstPrevious(currentBookings, previousBookings, email);
     }

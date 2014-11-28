@@ -11,8 +11,12 @@ exports.compareAgainstPrevious = function(currentBookings, previousBookings, ema
 		console.log(new Date().toString() + ' - comparison for ' + emailAddress + ' resulted in a match.');
 	}
 	else {
+	    var userdir = emailAddress.replace(/\./g, '');
+	    userdir = userdir.replace('@', '-');
+	    userdir = 'data/' + userdir;
+
 		console.log(new Date().toString() + ' - comparison for ' + emailAddress + ' resulted in a diff.');
-		caching.cacheDataToFile(JSON.parse(currentBookings), 'bookings.json');
+		caching.cacheDataToFile(JSON.parse(currentBookings), userdir, 'bookings.json');
 		email.alert(emailAddress)
 	}
 }
