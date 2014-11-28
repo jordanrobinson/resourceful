@@ -13,7 +13,7 @@ resources = require('../controllers/resources.js');
 var router = express.Router();
 
 var firstRenderFinished = false;
-var getDataInterval = 1000 * 60;// * 60;
+var getDataInterval = 1000 * 6;//0;// * 60;
 var previousBookings;
 
 
@@ -41,7 +41,7 @@ router.post('/', function(req, res) {
        updates.updateProjects();
     }
 
-    getData(config.settings.rgUsername, config.settings.rgPassword, res);
+    getData(config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
 
     setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
     res.render('success');
@@ -116,7 +116,12 @@ var parseData = function(bookings, email, res) {
             }
         }
 
-        caching.cacheDataToFile(bookings, 'bookings.json');
+        console.log(email);
+        var userdir = email.replace('.', '');
+        userdir = userdir.replace('@', '');
+        console.log(userdir);
+
+        caching.cacheDataToFile(bookings, + 'bookings.json');
         firstRenderFinished = true;
     }
     else {
