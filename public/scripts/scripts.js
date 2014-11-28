@@ -14,7 +14,6 @@ $(document).ready(function() {
 	$('submit').click(validate());
 });
 
-
 var validator = new FormValidator('subscribe', [{
     name: 'rgUsername',
     display: 'required',
@@ -33,3 +32,10 @@ var validator = new FormValidator('subscribe', [{
     }
 });
 
+$(document).ready(function() {
+	$('#unsubscribe-link').bind('click',
+		function() {
+			$('#unsubscribeBox').slideToggle('slow');
+			$('#subscribeBox').slideToggle('slow');
+		});
+});
