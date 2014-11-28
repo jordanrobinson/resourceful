@@ -16,6 +16,8 @@ var firstRenderFinished = false;
 var getDataInterval = 1000 * 6;//0;// * 60;
 var previousBookings;
 
+var runningTasks = {};
+
 
 /* GET index page. */
 router.get('/', function(req, res) {
@@ -28,7 +30,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    console.log('starting updates...');
+    
     if (fs.existsSync('data/clients.json')) {
         resources.clients = JSON.parse(fs.readFileSync('data/clients.json'));
     } else {
@@ -41,10 +43,17 @@ router.post('/', function(req, res) {
        updates.updateProjects();
     }
 
+    console.log('starting updates for ' + config.settings.rgUsername);
     getData(config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
 
-    setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
+    runningTasks[config.settings.rgUsername] = setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
     res.render('success');
+});
+
+router.post('/unsubscribe', function(req, res) {
+    clearInterval(runningTasks[config.settings.rgUsername]);
+    console.log('unsubscribing ' + config.settings.rgUsername);
+    res.render('unsubscribed');
 });
 
 module.exports = router;
@@ -129,8 +138,6 @@ var parseData = function(bookings, email, res) {
         currentBookings = fs.readFileSync(userdir + '/current.json', {encoding: 'utf8'});
         previousBookings = fs.readFileSync(userdir + '/bookings.json', {encoding: 'utf8'});
 
-        console.log(userdir + '/current.json');
-        
         comparison.compareAgainstPrevious(currentBookings, previousBookings, email);
     }
 }

@@ -34,7 +34,7 @@ var setup = function() {
 var constructBody = function() {
 	//do stuff here
 
-	return '<i>test email :D</i>'
+	return ;
 }
 
 var mail = function(body, destination) {
