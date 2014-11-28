@@ -50,34 +50,41 @@ html.no-js(lang='en', dir='ltr')
                     h1 Resourceful
                     h2 Description
                     p Resourceful lets you never have to wonder if you've been scheduled for something without you knowing, by sending you an alert if your schedule changes.
-                    p Sick of the alerts? Prefer a time when ignorance was bliss? All you need to do is #[a(href='#') Unsubscribe].
-                  section.block.block-size-a
+                    p Sick of the alerts? Prefer a time when ignorance was bliss? All you need to do is #[a(href='#', id='unsubscribe-link') unsubscribe].
+                  section#subscribeBox.block.block-size-a
                     h2 Setup
-                    form(action='/', method='post')
+                    form(action='/', method='post', name='subscribe', onsubmit='return subValidate();')
                       p All we need is your Resource Guru details, and an email address to send the alerts to.
                       div
-                        input.input-xlarge(type='text', placeholder='Resource Guru Username')
+                        input.input-xlarge(type='text', id='rgUsername', placeholder='Resource Guru Username')
                       div
-                        input.input-xlarge(type='text', placeholder='Resource Guru Password')
+                        input.input-xlarge(type='password', id='rgPassword', placeholder='Resource Guru Password')
                       div
-                        input.input-xlarge(type='text', placeholder='Email Address')
+                        input.input-xlarge(type='text', id='email', placeholder='Email Address')
                       div
                         button.btn.btn-style-a.btn-icon-right(type='submit') Login 
                           i.icon.ss-key
-                  section.block.block-size-a.visually-hidden
+                  section#unsubscribeBox.block.block-size-a
                     h2 Unsubscribe
-                    form(action='/', method='post')
+                    form(action='/', method='post', name='unsubscribe', onsubmit='return unsubValidate();')
                       p It seems we're already sending you alerts, would you like us to stop?
                       div
-                        input.input-xlarge(type='text', placeholder='Resource Guru Username')
+                        input.input-xlarge(type='text', id='unsubRgUsername', name='username', placeholder='Resource Guru Username')
                       div
-                        input.input-xlarge(type='text', placeholder='Resource Guru Password')
+                        input.input-xlarge(type='password', id= 'unsubRgPassword', name='password', placeholder='Resource Guru Password')
                       div
-                        input.input-xlarge(type='text', placeholder='Email Address')
+                        input.input-xlarge(type='text', id= 'unsubEmail', name='email', placeholder='Email Address')
                       div
                         button.btn.btn-style-c.btn-icon-right(type='submit') Unsubscribe 
                           i.icon.ss-delete
                   section.block.block-size-a
                     h2 Details
-                    p Resourceful is on #[a(href='#') Github]! There's plenty of stuff to do and much more I haven't thought of, so get contributing!
+                    p Resourceful is on #[a(href='https://github.com/JordanRobinson/resourceful') Github]! There's plenty of stuff to do and much more I haven't thought of, so get contributing!
         footer#footer(role='contentinfo')
+    //
+       Jquery 
+    script(src='./scripts/jquery.js')
+    script(src='./scripts/validate.min.js')
+    //
+       Combined Scripts 
+    script(src='./scripts/scripts.js')

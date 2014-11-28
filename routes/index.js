@@ -28,7 +28,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    // console.log('starting updates...');
+    console.log('starting updates...');
     // if (fs.existsSync('data/clients.json')) {
     //     resources.clients = JSON.parse(fs.readFileSync('data/clients.json'));
     // } else {
@@ -42,8 +42,9 @@ router.post('/', function(req, res) {
     // }
 
     // getData(config.settings.rgUsername, config.settings.rgPassword, res);
-    // setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, res);
-    res.render('main');
+
+    setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, res);
+    res.render('success');
 });
 
 module.exports = router;

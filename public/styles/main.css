@@ -4024,3 +4024,11 @@ html:hover [class^="ss-"] {
   }
 }
 /*# sourceMappingURL=main.css.map */
+
+#unsubscribeBox {
+  display:none;
+}
+
+#validationText {
+  display:none;
+}
