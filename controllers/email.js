@@ -1,40 +1,34 @@
-var express = require('express');
-var router = express.Router(); 
+var exports = module.exports = {};
 var request = require('request');
 var nodemailer = require('nodemailer');
 var fs = require('fs');
 var setupFinished = false;
 var settings, transporter;
 
-router.post('/', function(req, res) {
-	if (!setupFinished) {
-		setup();
-	}
-	mail(settings.mailUsername, req, constructBody());
-	res.send('success!');
-});
-
-module.exports = router;
+exports.alert = function(emailAddress) {
+	setup();
+	mail(constructBody(), emailAddress);
+}
 
 var setup = function() {
 	var data = fs.readFileSync('./config.json');
+	try{
+		settings = JSON.parse(data);
+		setupFinished = true;
+	}
+	catch (err) { 
+		console.log(err);
+	}
 
-		transporter = nodemailer.createTransport({ //would be better as singleton
-			service: 'Gmail',
-			debug: true,
-			auth: {
-				user: settings.mailUsername,
-				pass: settings.mailPassword
-			}
-		});
+	transporter = nodemailer.createTransport({ //would be better as singleton
+		service: 'Gmail',
+		debug: true,
+		auth: {
+			user: settings.mailUsername,
+			pass: settings.mailPassword
+		}
+	});
 
-		try{
-			settings = JSON.parse(data);
-			setupFinished = true;
-		}
-		catch (err) { 
-			console.log(err);
-		}
 	}
 
 var constructBody = function() {
@@ -43,7 +37,7 @@ var constructBody = function() {
 	return '<i>test email :D</i>'
 }
 
-var mail = function(destination, req, body) {
+var mail = function(body, destination) {
 
 	var mailOptions = {
 		from: 'test person',

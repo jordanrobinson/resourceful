@@ -29,37 +29,37 @@ router.get('/', function(req, res) {
 
 router.post('/', function(req, res) {
     console.log('starting updates...');
-    // if (fs.existsSync('data/clients.json')) {
-    //     resources.clients = JSON.parse(fs.readFileSync('data/clients.json'));
-    // } else {
-    //     updates.updateClients();
-    // }
+    if (fs.existsSync('data/clients.json')) {
+        resources.clients = JSON.parse(fs.readFileSync('data/clients.json'));
+    } else {
+        updates.updateClients();
+    }
 
-    // if (fs.existsSync('data/projects.json')) {
-    //     resources.projects = JSON.parse(fs.readFileSync('data/projects.json'));
-    // } else {
-    //    updates.updateProjects();
-    // }
+    if (fs.existsSync('data/projects.json')) {
+        resources.projects = JSON.parse(fs.readFileSync('data/projects.json'));
+    } else {
+       updates.updateProjects();
+    }
 
-    // getData(config.settings.rgUsername, config.settings.rgPassword, res);
+    getData(config.settings.rgUsername, config.settings.rgPassword, res);
 
-    setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, res);
+    setInterval(getData, getDataInterval, config.settings.rgUsername, config.settings.rgPassword, config.settings.mailUsername, res);
     res.render('success');
 });
 
 module.exports = router;
 
-var getData = function(user, pass, res) {
+var getData = function(user, pass, email, res) {
     console.log('hitting getData ' + new Date().toString());
     if (updates.update) {
-        basicRequest(user, pass, res);
+        basicRequest(user, pass, email, res);
     }
     else {
         console.log('Polling currently off.');
     }
 };
 
-var basicRequest = function(user, pass, res) {
+var basicRequest = function(user, pass, email, res) {
     var self = this;
     self.res = res;
 
@@ -85,12 +85,12 @@ var basicRequest = function(user, pass, res) {
             }
         };
         request(options, function(err, res, body) {
-            parseData(JSON.parse(body), self.res);
+            parseData(JSON.parse(body), email, self.res);
         });
     });
 };
 
-var parseData = function(bookings, res) {
+var parseData = function(bookings, email, res) {
 
     if (!firstRenderFinished) {
 
@@ -116,8 +116,6 @@ var parseData = function(bookings, res) {
             }
         }
 
-        res.render('schedule', { bookings: bookings });
-
         caching.cacheDataToFile(bookings, 'bookings.json');
         firstRenderFinished = true;
     }
@@ -127,7 +125,7 @@ var parseData = function(bookings, res) {
         currentBookings = fs.readFileSync('data/current.json', {encoding: 'utf8'});
         previousBookings = fs.readFileSync('data/bookings.json', {encoding: 'utf8'});
         
-        comparison.compareAgainstPrevious(currentBookings, previousBookings);
+        comparison.compareAgainstPrevious(currentBookings, previousBookings, email);
     }
 }
 

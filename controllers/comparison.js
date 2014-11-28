@@ -1,33 +1,18 @@
 var exports = module.exports = {};
 
-var caching = require('../controllers/caching.js');
+var caching = require('../controllers/caching.js')
+email = require('../controllers/email.js');
 
 var fs = require('fs')
 jsdiff = require('diff');
 
-exports.compareAgainstPrevious = function(currentBookings, previousBookings) {
+exports.compareAgainstPrevious = function(currentBookings, previousBookings, emailAddress) {
 	if (currentBookings === previousBookings) {
-		console.log('match!');
+		console.log(new Date().toString() + ' - comparison for ' + emailAddress + ' resulted in a match.');
 	}
 	else {
-		console.log('different!');
+		console.log(new Date().toString() + ' - comparison for ' + emailAddress + ' resulted in a diff.');
 		caching.cacheDataToFile(JSON.parse(currentBookings), 'bookings.json');
+		email.alert(emailAddress)
 	}
-
-	// var diff = jsdiff.diffWords(currentBookings, previousBookings);
-	// console.log(diff.length);
-
-	// diff.forEach(function(part){
- //  var color = part.added ? 'green' :
- //  part.removed ? 'red' : 'grey';
- //  process.stderr.write(part.value[color]);
-	// });
-
-	// if (diff) {
-	// 	console.log('looks the same as an hour ago');
-	// }
-	// else {
-	// 	console.log('different D:');
-	// 	previousBookings = bookings;
-	// }
 }
